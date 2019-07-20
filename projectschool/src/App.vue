@@ -1,23 +1,38 @@
 <template>
   <div id="app">
-    <Alunos />
+    <Nav></Nav>
+    <div class="marginPrincipal">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
 <script>
-import Alunos from "./components/Aluno/Alunos.vue";
+import Alunos from "./components/Aluno/Alunos";
+import Professor from "./components/Professor/Professor";
+import Sobre from "./components/Sobre/Sobre";
+import Nav from "./components/_nav/Nav";
 
 export default {
   name: "app",
   components: {
-    Alunos
+    Alunos,
+    Professor,
+    Sobre,
+    Nav
   }
 };
 </script>
 
 <style>
-/* #app {
-} */
+#app {
+  width: 100%;
+}
+
+.marginPrincipal {
+  width: 50%;
+  margin: auto;
+}
 
 @import url("https://fonts.googleapis.com/css?family=Montserrat:400,700");
 
