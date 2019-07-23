@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!loading">
     <Titulo :texto="`Aluno: ${aluno.nome}`" :btnVoltar="!visualizando">
       <button v-show="visualizando" class="btn btnEditar" @click="editar()">editar</button>
     </Titulo>
@@ -29,19 +29,19 @@
         <tr>
           <td class="colPequeno">Data Nascimento:</td>
           <td>
-            <label v-if="visualizando">{{aluno.datanascimento}}</label>
-            <input v-else v-model="aluno.datanascimento" type="text" />
+            <label v-if="visualizando">{{aluno.dataNascimento}}</label>
+            <input v-else v-model="aluno.dataNascimento" type="text" />
           </td>
         </tr>
         <tr>
           <td class="colPequeno">Professor:</td>
           <td>
             <label v-if="visualizando">{{aluno.professor.nome}}</label>
-            <select v-else v-model="aluno.professor">
+            <select v-else v-model="aluno.professor.id">
               <option
                 v-for="(professor, index) in professores"
                 :key="index"
-                :value="professor"
+                :value="professor.id"
               >{{aluno.professor.nome}}</option>
             </select>
           </td>
@@ -70,21 +70,12 @@ export default {
       professores: [],
       aluno: {},
       id: this.$route.params.id,
-      visualizando: true
+      visualizando: true,
+      loading: true
     };
   },
   created() {
-    this.$http
-      .get(`http://localhost:3000/alunos/${this.id}`)
-      .then(res => res.json())
-      .then(aluno => (this.aluno = aluno));
-
-    this.$http
-      .get("http://localhost:3000/professor")
-      .then(res => res.json())
-      .then(professores => {
-        this.professores = professores;
-      });
+    this.carregarProfessor();
   },
   methods: {
     editar() {
@@ -95,16 +86,38 @@ export default {
         id: this.aluno.id,
         nome: this.aluno.nome,
         sobrenome: this.aluno.sobrenome,
-        datanascimento: this.aluno.datanascimento,
-        professor: this.aluno.professor
+        dataNascimento: this.aluno.dataNascimento,
+        professorid: this.aluno.professor.id
       };
 
-      this.$http.put(`http://localhost:3000/alunos/${_aluno.id}`, _aluno);
+      this.$http
+        .put(`http://localhost:5000/api/aluno/${_aluno.id}`, _aluno)
+        .then(res => res.json())
+        .then(aluno => (this.aluno = aluno))
+        .then(() => (this.visualizando = true));
 
       this.visualizando = !this.visualizando;
     },
     cancelar() {
       this.visualizando = !this.visualizando;
+    },
+    carregarProfessor() {
+      this.$http
+        .get("http://localhost:5000/api/professor")
+        .then(res => res.json())
+        .then(professores => {
+          this.professores = professores;
+          this.carregarAluno();
+        });
+    },
+    carregarAluno() {
+      this.$http
+        .get(`http://localhost:5000/api/aluno/${this.id}`)
+        .then(res => res.json())
+        .then(aluno => {
+          this.aluno = aluno;
+          this.loading = false;
+        });
     }
   }
 };

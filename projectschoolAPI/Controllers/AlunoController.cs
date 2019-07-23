@@ -38,7 +38,7 @@ namespace projectschoolAPI.Controllers
             {
                 var result = await _repo.GetAlunoAsyncById(AlunoId, true);
 
-                return Ok();
+                return Ok(result);
             }
             catch (System.Exception)
             {
@@ -53,7 +53,7 @@ namespace projectschoolAPI.Controllers
             {
                 var result = await _repo.GetAlunosAsyncByProfessorId(ProfessorId, true);
 
-                return Ok();
+                return Ok(result);
             }
             catch (System.Exception)
             {
